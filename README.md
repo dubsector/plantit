@@ -1,6 +1,12 @@
 # plantit
 
 [![Build](https://github.com/dubsector/plantit/actions/workflows/build.yml/badge.svg)](https://github.com/dubsector/plantit/actions/workflows/build.yml)
+[![CodeQL](https://github.com/dubsector/plantit/actions/workflows/codeql.yml/badge.svg)](https://github.com/dubsector/plantit/actions/workflows/codeql.yml)
+[![Dependency Check](https://github.com/dubsector/plantit/actions/workflows/dependency-check.yml/badge.svg)](https://github.com/dubsector/plantit/actions/workflows/dependency-check.yml)
+[![Zizmor](https://github.com/dubsector/plantit/actions/workflows/zizmor.yml/badge.svg)](https://github.com/dubsector/plantit/actions/workflows/zizmor.yml)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/dubsector/plantit/badge)](https://securityscorecards.dev/viewer/?uri=github.com/dubsector/plantit)
+[![Security Policy](https://img.shields.io/badge/Security-Policy-green)](SECURITY.md)
+[![Dependabot](https://img.shields.io/badge/Dependabot-enabled-025E8C?logo=dependabot)](https://github.com/dubsector/plantit/network/updates)
 
 Tactical bomb-defuse minigame for Minecraft, running on [Paper](https://papermc.io/software/paper) 1.21.4.
 

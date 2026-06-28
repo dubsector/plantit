@@ -92,23 +92,14 @@ jobs:
             -o smoke-server/paper.jar
           echo "${EXPECTED_SHA}  smoke-server/paper.jar" | sha256sum -c
 
-      - name: Download WorldEdit and WorldGuard
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Download WorldEdit and WorldGuard via Maven
         run: |
-          WE_URL=$(curl -fsSL \
-            -H "Authorization: Bearer $GH_TOKEN" \
-            "https://api.github.com/repos/EngineHub/WorldEdit/releases/latest" \
-            | python3 -c "import sys,json; assets=json.load(sys.stdin)['assets']; jar=next(a for a in assets if 'bukkit' in a['name'].lower() and a['name'].endswith('.jar')); print(jar['browser_download_url'])")
-          echo "Downloading WorldEdit: $WE_URL"
-          curl -fsSL "$WE_URL" -o smoke-server/plugins/worldedit.jar
-
-          WG_URL=$(curl -fsSL \
-            -H "Authorization: Bearer $GH_TOKEN" \
-            "https://api.github.com/repos/EngineHub/WorldGuard/releases/latest" \
-            | python3 -c "import sys,json; assets=json.load(sys.stdin)['assets']; jar=next(a for a in assets if 'bukkit' in a['name'].lower() and a['name'].endswith('.jar')); print(jar['browser_download_url'])")
-          echo "Downloading WorldGuard: $WG_URL"
-          curl -fsSL "$WG_URL" -o smoke-server/plugins/worldguard.jar
+          mvn -B dependency:copy \
+            -Dartifact=com.sk89q.worldedit:worldedit-bukkit:7.3.12:jar \
+            -DoutputDirectory=smoke-server/plugins/
+          mvn -B dependency:copy \
+            -Dartifact=com.sk89q.worldguard:worldguard-bukkit:7.0.12:jar \
+            -DoutputDirectory=smoke-server/plugins/
 
       - name: Copy plugin JAR
         run: cp plugin-jar/plantit-*.jar smoke-server/plugins/plantit.jar
