@@ -19,7 +19,7 @@ Works alongside [plantit-queue](https://github.com/dubsector/plantit-queue), a V
 - Paper 1.21.4
 - Java 21
 - [WorldEdit](https://enginehub.org/worldedit/) 7.4.x
-- [WorldGuard](https://enginehub.org/worldguard/) 7.0.x
+- [WorldGuard](https://enginehub.org/worldguard/) 7.0.14+
 - [plantit-queue](https://github.com/dubsector/plantit-queue) on your Velocity proxy
 
 ## Installation

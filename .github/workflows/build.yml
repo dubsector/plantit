@@ -100,7 +100,7 @@ jobs:
       - name: Download WorldEdit and WorldGuard via Maven
         run: |
           mvn -B dependency:copy-dependencies \
-            -DincludeGroupIds=com.sk89q.worldedit,com.sk89q.worldguard \
+            -DincludeArtifactIds=worldedit-bukkit,worldguard-bukkit \
             -DincludeScope=provided \
             -DoutputDirectory=smoke-server/plugins/
 
