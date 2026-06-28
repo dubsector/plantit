@@ -88,13 +88,7 @@ jobs:
           PAPER_VERSION="1.21.11"
           curl -fsSL "https://api.papermc.io/v2/projects/paper/versions/${PAPER_VERSION}/builds" \
             -o /tmp/paper-builds.json
-          BUILD_INFO=$(python3 -c "
-import json
-builds = json.load(open('/tmp/paper-builds.json'))['builds']
-stable = [b for b in builds if b.get('channel','') == 'default']
-chosen = (stable or builds)[-1]
-print(chosen['build'], chosen['downloads']['application']['sha256'])
-")
+          BUILD_INFO=$(python3 -c "import json; builds=json.load(open('/tmp/paper-builds.json'))['builds']; stable=[b for b in builds if b.get('channel','')=='default']; chosen=(stable or builds)[-1]; print(chosen['build'], chosen['downloads']['application']['sha256'])")
           BUILD=$(echo "$BUILD_INFO" | awk '{print $1}')
           EXPECTED_SHA=$(echo "$BUILD_INFO" | awk '{print $2}')
           JAR_NAME="paper-${PAPER_VERSION}-${BUILD}.jar"
