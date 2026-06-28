@@ -94,11 +94,14 @@ jobs:
 
       - name: Download WorldEdit and WorldGuard via Maven
         run: |
+          ENGINEHUB="enginehub::default::https://maven.enginehub.org/repo/"
           mvn -B dependency:copy \
             -Dartifact=com.sk89q.worldedit:worldedit-bukkit:7.3.12:jar \
+            -DremoteRepositories="$ENGINEHUB" \
             -DoutputDirectory=smoke-server/plugins/
           mvn -B dependency:copy \
             -Dartifact=com.sk89q.worldguard:worldguard-bukkit:7.0.12:jar \
+            -DremoteRepositories="$ENGINEHUB" \
             -DoutputDirectory=smoke-server/plugins/
 
       - name: Copy plugin JAR
