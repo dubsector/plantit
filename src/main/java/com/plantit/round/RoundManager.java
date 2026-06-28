@@ -85,9 +85,6 @@ public class RoundManager {
         List<Player> tPlayers = teamManager.getAlivePlayers(GameTeam.T);
         bombManager.onRoundStart(tPlayers);
 
-        // Ensure new players have starting money
-        economyManager.onRoundStart();
-
         transitionTo(RoundPhase.FREEZE);
     }
 
