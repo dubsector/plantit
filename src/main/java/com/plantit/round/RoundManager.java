@@ -67,6 +67,10 @@ public class RoundManager {
         if (currentRound == 1) {
             economyManager.initMatch();
             weaponManager.onMatchStart();
+            // Reset to default-map so a previous vote doesn't bleed into the next match.
+            // MAP_SELECTED from the proxy (if voting is on) will override this before
+            // the freeze ends, since it arrives before players finish connecting.
+            mapManager.load();
         }
 
         // Halftime swap
