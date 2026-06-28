@@ -18,13 +18,14 @@ Works alongside [plantit-queue](https://github.com/dubsector/plantit-queue), a V
 
 - Paper 1.21.4
 - Java 21
+- [WorldEdit](https://enginehub.org/worldedit/) 7.4.x
 - [WorldGuard](https://enginehub.org/worldguard/) 7.0.x
 - [plantit-queue](https://github.com/dubsector/plantit-queue) on your Velocity proxy
 
 ## Installation
 
 1. Download the latest JAR from [Releases](https://github.com/dubsector/plantit/releases)
-2. Drop it into your Paper server's `plugins/` folder alongside WorldGuard
+2. Drop it into your Paper server's `plugins/` folder alongside WorldEdit and WorldGuard
 3. Restart the server — a default `config.yml` is generated in `plugins/PlantIt/`
 4. Configure your game settings and map regions
 5. The server will automatically signal the Velocity queue when a match ends and slots open
@@ -77,7 +78,7 @@ mvn clean package -DskipTests
 # JAR is in target/
 ```
 
-Requires Java 21, Maven 3.8+, and a local WorldGuard install or internet access for dependency resolution.
+Requires Java 21, Maven 3.8+, and internet access for dependency resolution (WorldEdit and WorldGuard are pulled from the EngineHub Maven repo).
 
 ## License
 
