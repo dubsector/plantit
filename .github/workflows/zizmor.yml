@@ -25,6 +25,6 @@ jobs:
           persist-credentials: false
 
       - name: Run Zizmor
-        uses: woodruffw/zizmor-action@4a8b2bc9b9f83cfe0804c8f9f1e76ee85a1bee16 # v1.9.3
+        uses: zizmorcore/zizmor-action@192e21d79ab29983730a13d1382995c2307fbcaa # v0.5.7
         with:
           config: null
