@@ -16,7 +16,7 @@ Works alongside [plantit-queue](https://github.com/dubsector/plantit-queue), a V
 
 ## Requirements
 
-- Paper 1.21.4
+- Paper 1.21.11
 - Java 21
 - [WorldEdit](https://enginehub.org/worldedit/) 7.4.x
 - [WorldGuard](https://enginehub.org/worldguard/) 7.0.14+

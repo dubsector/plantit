@@ -85,7 +85,7 @@ jobs:
 
       - name: Resolve and download Paper JAR
         run: |
-          PAPER_VERSION="1.21.4"
+          PAPER_VERSION="1.21.11"
           BUILD_INFO=$(curl -fsSL "https://api.papermc.io/v2/projects/paper/versions/${PAPER_VERSION}/builds" \
             | python3 -c "import sys,json; builds=json.load(sys.stdin)['builds']; stable=[b for b in builds if b.get('channel','')=='default']; chosen=(stable or builds)[-1]; print(chosen['build'], chosen['downloads']['application']['sha256'])")
           BUILD=$(echo "$BUILD_INFO" | awk '{print $1}')
