@@ -206,9 +206,11 @@ jobs:
           subject-path: plugin-jar/plantit-*.jar
 
       - name: Copy provenance bundle for release
+        env:
+          BUNDLE_PATH: ${{ steps.attest.outputs.bundle-path }}
         run: |
           JAR=$(ls plugin-jar/plantit-*.jar | head -1)
-          cp "${{ steps.attest.outputs.bundle-path }}" "${JAR}.intoto.jsonl"
+          cp "$BUNDLE_PATH" "${JAR}.intoto.jsonl"
 
       - name: Install cosign
         uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
@@ -223,9 +225,10 @@ jobs:
       - name: Generate release notes
         env:
           SHORT_SHA: ${{ needs.build.outputs.short_sha }}
+          REPO: ${{ github.repository }}
         run: |
-          printf '> [!WARNING]\n> **Use at your own risk.** This is an automated pre-release build and may be unstable. Not recommended for production use.\n\nBuilt from [%s](https://github.com/${{ github.repository }}/commit/%s)\n\n**Requires:** Paper 1.21.4 · WorldGuard 7.0.x · Java 21\n' \
-            "$SHORT_SHA" "$GITHUB_SHA" > release-notes.md
+          printf '> [!WARNING]\n> **Use at your own risk.** This is an automated pre-release build and may be unstable. Not recommended for production use.\n\nBuilt from [%s](https://github.com/%s/commit/%s)\n\n**Requires:** Paper 1.21.11 · WorldGuard 7.0.17 · Java 21\n' \
+            "$SHORT_SHA" "$REPO" "$GITHUB_SHA" > release-notes.md
 
       - name: Publish release
         uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
