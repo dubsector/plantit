@@ -4,7 +4,7 @@ game:
   overtime-rounds: 6    # MR3 overtime
 
 phases:
-  freeze-duration: 15   # seconds — buy phase / freeze
+  freeze-duration: 20   # seconds — buy phase / freeze (CS2 buy window is 20s)
   round-duration: 115   # seconds — 1:55 live time
   round-end-delay: 5    # seconds between round end and next round start
 
