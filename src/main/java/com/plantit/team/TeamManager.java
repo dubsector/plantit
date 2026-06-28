@@ -16,7 +16,7 @@ import java.util.UUID;
 public class TeamManager {
 
     private final PlantIt plugin;
-    private final Map<UUID, CSTeam> playerTeams = new HashMap<>();
+    private final Map<UUID, GameTeam> playerTeams = new HashMap<>();
     private final Set<UUID> deadThisRound = new HashSet<>();
 
     public TeamManager(PlantIt plugin) {
@@ -24,20 +24,20 @@ public class TeamManager {
     }
 
     public void assignTeam(Player player) {
-        long tCount = playerTeams.values().stream().filter(t -> t == CSTeam.T).count();
-        long ctCount = playerTeams.values().stream().filter(t -> t == CSTeam.CT).count();
-        CSTeam team = tCount <= ctCount ? CSTeam.T : CSTeam.CT;
+        long tCount = playerTeams.values().stream().filter(t -> t == GameTeam.T).count();
+        long ctCount = playerTeams.values().stream().filter(t -> t == GameTeam.CT).count();
+        GameTeam team = tCount <= ctCount ? GameTeam.T : GameTeam.CT;
         setTeam(player, team);
     }
 
-    public void setTeam(Player player, CSTeam team) {
+    public void setTeam(Player player, GameTeam team) {
         playerTeams.put(player.getUniqueId(), team);
         player.sendMessage(Component.text("Team: ")
                 .append(Component.text(team.getDisplayName(), team.getColor())));
     }
 
-    public CSTeam getTeam(Player player) {
-        return playerTeams.getOrDefault(player.getUniqueId(), CSTeam.SPECTATOR);
+    public GameTeam getTeam(Player player) {
+        return playerTeams.getOrDefault(player.getUniqueId(), GameTeam.SPECTATOR);
     }
 
     public void markDead(Player player) {
@@ -49,7 +49,7 @@ public class TeamManager {
         return deadThisRound.contains(player.getUniqueId());
     }
 
-    public List<Player> getAlivePlayers(CSTeam team) {
+    public List<Player> getAlivePlayers(GameTeam team) {
         return playerTeams.entrySet().stream()
                 .filter(e -> e.getValue() == team && !deadThisRound.contains(e.getKey()))
                 .map(e -> plugin.getServer().getPlayer(e.getKey()))
@@ -59,7 +59,7 @@ public class TeamManager {
 
     public int getTotalActivePlayers() {
         return (int) playerTeams.values().stream()
-                .filter(t -> t != CSTeam.SPECTATOR)
+                .filter(t -> t != GameTeam.SPECTATOR)
                 .count();
     }
 
@@ -67,7 +67,7 @@ public class TeamManager {
     public void resetForRound() {
         deadThisRound.clear();
         playerTeams.forEach((uuid, team) -> {
-            if (team == CSTeam.SPECTATOR) return;
+            if (team == GameTeam.SPECTATOR) return;
             Player p = plugin.getServer().getPlayer(uuid);
             if (p != null) p.setGameMode(GameMode.SURVIVAL);
         });
@@ -76,9 +76,9 @@ public class TeamManager {
     /** Swaps T/CT assignments at halftime. */
     public void swapTeams() {
         playerTeams.replaceAll((uuid, team) -> switch (team) {
-            case T -> CSTeam.CT;
-            case CT -> CSTeam.T;
-            case SPECTATOR -> CSTeam.SPECTATOR;
+            case T -> GameTeam.CT;
+            case CT -> GameTeam.T;
+            case SPECTATOR -> GameTeam.SPECTATOR;
         });
     }
 

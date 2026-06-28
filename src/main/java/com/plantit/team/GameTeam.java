@@ -3,7 +3,7 @@ package com.plantit.team;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 
-public enum CSTeam {
+public enum GameTeam {
 
     T("Terrorist", NamedTextColor.RED),
     CT("Counter-Terrorist", NamedTextColor.BLUE),
@@ -12,7 +12,7 @@ public enum CSTeam {
     private final String displayName;
     private final TextColor color;
 
-    CSTeam(String displayName, TextColor color) {
+    GameTeam(String displayName, TextColor color) {
         this.displayName = displayName;
         this.color = color;
     }

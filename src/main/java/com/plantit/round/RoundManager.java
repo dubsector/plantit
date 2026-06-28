@@ -2,7 +2,7 @@ package com.plantit.round;
 
 import com.plantit.PlantIt;
 import com.plantit.config.GameConfig;
-import com.plantit.team.CSTeam;
+import com.plantit.team.GameTeam;
 import com.plantit.team.TeamManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -124,8 +124,8 @@ public class RoundManager {
     public void checkEliminationWin() {
         if (phase != RoundPhase.LIVE) return;
 
-        boolean tAlive = !teamManager.getAlivePlayers(CSTeam.T).isEmpty();
-        boolean ctAlive = !teamManager.getAlivePlayers(CSTeam.CT).isEmpty();
+        boolean tAlive = !teamManager.getAlivePlayers(GameTeam.T).isEmpty();
+        boolean ctAlive = !teamManager.getAlivePlayers(GameTeam.CT).isEmpty();
 
         if (!tAlive) endRound(RoundEndReason.T_ELIMINATED);
         else if (!ctAlive) endRound(RoundEndReason.CT_ELIMINATED);

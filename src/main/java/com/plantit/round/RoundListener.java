@@ -1,7 +1,7 @@
 package com.plantit.round;
 
 import com.plantit.PlantIt;
-import com.plantit.team.CSTeam;
+import com.plantit.team.GameTeam;
 import com.plantit.team.TeamManager;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -31,7 +31,7 @@ public class RoundListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerMove(PlayerMoveEvent event) {
         if (roundManager.getPhase() != RoundPhase.FREEZE) return;
-        if (teamManager.getTeam(event.getPlayer()) == CSTeam.SPECTATOR) return;
+        if (teamManager.getTeam(event.getPlayer()) == GameTeam.SPECTATOR) return;
 
         Location from = event.getFrom();
         Location to = event.getTo();
@@ -81,7 +81,7 @@ public class RoundListener implements Listener {
             roundManager.tryStartRound();
         } else {
             // Mid-round join → spectator until next round
-            teamManager.setTeam(player, CSTeam.SPECTATOR);
+            teamManager.setTeam(player, GameTeam.SPECTATOR);
             player.setGameMode(GameMode.SPECTATOR);
         }
     }

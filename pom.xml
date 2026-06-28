@@ -10,7 +10,7 @@
     <packaging>jar</packaging>
 
     <name>PlantIt</name>
-    <description>CS2-inspired pixel-art Minecraft minigame</description>
+    <description>Tactical bomb-defuse minigame for Minecraft</description>
     <url>https://gitlab.com/plantit/plantit</url>
 
     <licenses>
