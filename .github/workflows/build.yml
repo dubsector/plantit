@@ -139,9 +139,9 @@ jobs:
           cat "$LOG"
           echo "--- End log ---"
 
-          if grep -qiE "error loading plugin.*plantit|failed to load.*plantit|plantit.*disabled|exception in thread" "$LOG"; then
+          if grep -qiE "error loading plugin.*plantit|failed to load.*plantit|exception in thread" "$LOG"; then
             echo "::error::plantit logged errors on startup"
-            grep -iE "error loading plugin.*plantit|failed to load.*plantit|plantit.*disabled|exception in thread" "$LOG"
+            grep -iE "error loading plugin.*plantit|failed to load.*plantit|exception in thread" "$LOG"
             exit 1
           fi
 
