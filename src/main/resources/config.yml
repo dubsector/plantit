@@ -1,0 +1,9 @@
+game:
+  min-players: 2
+  max-rounds: 24        # first to 13 wins
+  overtime-rounds: 6    # MR3 overtime
+
+phases:
+  freeze-duration: 15   # seconds — buy phase / freeze
+  round-duration: 115   # seconds — 1:55 live time
+  round-end-delay: 5    # seconds between round end and next round start

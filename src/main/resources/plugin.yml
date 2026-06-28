@@ -1,0 +1,8 @@
+name: PlantIt
+version: '${project.version}'
+main: com.plantit.PlantIt
+api-version: '1.21'
+description: CS2-inspired pixel-art Minecraft minigame
+authors: [ ]
+depend:
+  - WorldGuard
