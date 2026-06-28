@@ -11,6 +11,9 @@ import com.plantit.messaging.GameMessenger;
 import com.plantit.round.RoundListener;
 import com.plantit.round.RoundManager;
 import com.plantit.team.TeamManager;
+import com.plantit.weapon.BuyMenu;
+import com.plantit.weapon.WeaponListener;
+import com.plantit.weapon.WeaponManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class PlantIt extends JavaPlugin {
@@ -21,6 +24,8 @@ public class PlantIt extends JavaPlugin {
     private TeamManager teamManager;
     private MapManager mapManager;
     private EconomyManager economyManager;
+    private WeaponManager weaponManager;
+    private BuyMenu buyMenu;
     private BombManager bombManager;
     private HudManager hudManager;
     private RoundManager roundManager;
@@ -31,21 +36,26 @@ public class PlantIt extends JavaPlugin {
         instance = this;
         saveDefaultConfig();
 
-        gameConfig    = new GameConfig(getConfig());
-        teamManager   = new TeamManager(this);
-        mapManager    = new MapManager(this);
+        gameConfig     = new GameConfig(getConfig());
+        teamManager    = new TeamManager(this);
+        mapManager     = new MapManager(this);
         economyManager = new EconomyManager(this, teamManager);
-        gameMessenger = new GameMessenger(this);
-        bombManager   = new BombManager(this, teamManager, economyManager, mapManager);
-        roundManager  = new RoundManager(this, teamManager, gameConfig, gameMessenger,
-                                          mapManager, economyManager, bombManager);
+        weaponManager  = new WeaponManager(this, economyManager, teamManager);
+        buyMenu        = new BuyMenu(this, weaponManager, economyManager, teamManager);
+        gameMessenger  = new GameMessenger(this);
+        bombManager    = new BombManager(this, teamManager, economyManager, mapManager);
+        roundManager   = new RoundManager(this, teamManager, gameConfig, gameMessenger,
+                                           mapManager, economyManager, bombManager, weaponManager);
         bombManager.setRoundManager(roundManager);
-        hudManager    = new HudManager(this, roundManager, teamManager);
+        hudManager     = new HudManager(this, roundManager, teamManager);
 
         getServer().getPluginManager().registerEvents(
-                new RoundListener(this, roundManager, teamManager, economyManager, bombManager, hudManager), this);
+                new RoundListener(this, roundManager, teamManager, economyManager,
+                                  bombManager, hudManager, weaponManager), this);
         getServer().getPluginManager().registerEvents(
                 new BombListener(bombManager, roundManager, teamManager), this);
+        getServer().getPluginManager().registerEvents(
+                new WeaponListener(this, weaponManager, buyMenu, roundManager, economyManager), this);
 
         PlantItCommand cmd = new PlantItCommand(this, mapManager, roundManager, economyManager);
         getCommand("plantit").setExecutor(cmd);
@@ -63,10 +73,11 @@ public class PlantIt extends JavaPlugin {
     }
 
     public static PlantIt getInstance() { return instance; }
-    public GameConfig getGameConfig()   { return gameConfig; }
-    public TeamManager getTeamManager() { return teamManager; }
+    public GameConfig getGameConfig()    { return gameConfig; }
+    public TeamManager getTeamManager()  { return teamManager; }
     public RoundManager getRoundManager() { return roundManager; }
-    public MapManager getMapManager()   { return mapManager; }
+    public MapManager getMapManager()    { return mapManager; }
     public EconomyManager getEconomyManager() { return economyManager; }
-    public BombManager getBombManager() { return bombManager; }
+    public WeaponManager getWeaponManager()   { return weaponManager; }
+    public BombManager getBombManager()  { return bombManager; }
 }

@@ -6,6 +6,8 @@ import com.plantit.economy.EconomyManager;
 import com.plantit.hud.HudManager;
 import com.plantit.team.GameTeam;
 import com.plantit.team.TeamManager;
+import com.plantit.weapon.Weapon;
+import com.plantit.weapon.WeaponManager;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -30,15 +32,18 @@ public class RoundListener implements Listener {
     private final EconomyManager economyManager;
     private final BombManager bombManager;
     private final HudManager hudManager;
+    private final WeaponManager weaponManager;
 
     public RoundListener(PlantIt plugin, RoundManager roundManager, TeamManager teamManager,
-                         EconomyManager economyManager, BombManager bombManager, HudManager hudManager) {
+                         EconomyManager economyManager, BombManager bombManager,
+                         HudManager hudManager, WeaponManager weaponManager) {
         this.plugin = plugin;
         this.roundManager = roundManager;
         this.teamManager = teamManager;
         this.economyManager = economyManager;
         this.bombManager = bombManager;
         this.hudManager = hudManager;
+        this.weaponManager = weaponManager;
     }
 
     /** Block XZ movement during freeze; allow looking around. */
@@ -78,7 +83,11 @@ public class RoundListener implements Listener {
 
         teamManager.markDead(dead);
 
-        if (killer != null) economyManager.onKill(killer);
+        if (killer != null) {
+            Weapon w = weaponManager.getWeapon(killer.getInventory().getItemInMainHand());
+            int bonus = w != null ? w.getKillBonus() : EconomyManager.KILL_BONUS;
+            economyManager.onKill(killer, bonus);
+        }
 
         // Defer by 1 tick so death is fully processed before checking elimination
         plugin.getServer().getScheduler().runTaskLater(plugin,
@@ -118,6 +127,7 @@ public class RoundListener implements Listener {
         bombManager.cancelDefusing();
         teamManager.removePlayer(player);
         economyManager.removePlayer(player);
+        weaponManager.removePlayer(player);
         hudManager.removePlayer(player);
         roundManager.checkEliminationWin();
     }

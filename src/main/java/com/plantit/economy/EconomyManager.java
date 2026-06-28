@@ -78,8 +78,8 @@ public class EconomyManager {
         teamManager.getAlivePlayers(GameTeam.CT).forEach(p -> addMoney(p, DEFUSE_BONUS));
     }
 
-    public void onKill(Player killer) {
-        addMoney(killer, KILL_BONUS);
+    public void onKill(Player killer, int bonus) {
+        addMoney(killer, bonus);
     }
 
     public boolean buyKit(Player player) {

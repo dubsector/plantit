@@ -9,6 +9,7 @@ import com.plantit.map.MapManager;
 import com.plantit.messaging.GameMessenger;
 import com.plantit.team.GameTeam;
 import com.plantit.team.TeamManager;
+import com.plantit.weapon.WeaponManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -29,6 +30,7 @@ public class RoundManager {
     private final MapManager mapManager;
     private final EconomyManager economyManager;
     private final BombManager bombManager;
+    private final WeaponManager weaponManager;
 
     private RoundPhase phase = RoundPhase.WAITING;
     private int currentRound = 0;
@@ -40,7 +42,8 @@ public class RoundManager {
 
     public RoundManager(PlantIt plugin, TeamManager teamManager, GameConfig config,
                         GameMessenger messenger, MapManager mapManager,
-                        EconomyManager economyManager, BombManager bombManager) {
+                        EconomyManager economyManager, BombManager bombManager,
+                        WeaponManager weaponManager) {
         this.plugin = plugin;
         this.teamManager = teamManager;
         this.config = config;
@@ -48,6 +51,7 @@ public class RoundManager {
         this.mapManager = mapManager;
         this.economyManager = economyManager;
         this.bombManager = bombManager;
+        this.weaponManager = weaponManager;
     }
 
     public void tryStartRound() {
@@ -59,8 +63,11 @@ public class RoundManager {
     public void startRound() {
         currentRound++;
 
-        // Initialize economy on first round of a new match
-        if (currentRound == 1) economyManager.initMatch();
+        // Initialize economy and weapon stashes on first round of a new match
+        if (currentRound == 1) {
+            economyManager.initMatch();
+            weaponManager.onMatchStart();
+        }
 
         // Halftime swap
         int half = config.getMaxRounds() / 2;
@@ -71,18 +78,23 @@ public class RoundManager {
 
         teamManager.resetForRound();
 
-        // Teleport players to random positions within their spawn region
-        for (Player p : teamManager.getAlivePlayers(GameTeam.T)) {
+        // Restore weapons, then teleport to spawns
+        List<Player> tPlayers  = teamManager.getAlivePlayers(GameTeam.T);
+        List<Player> ctPlayers = teamManager.getAlivePlayers(GameTeam.CT);
+
+        tPlayers.forEach(weaponManager::onRoundStart);
+        ctPlayers.forEach(weaponManager::onRoundStart);
+
+        for (Player p : tPlayers) {
             Location spawn = mapManager.getRandomTSpawn(p.getWorld());
             if (spawn != null) p.teleport(spawn);
         }
-        for (Player p : teamManager.getAlivePlayers(GameTeam.CT)) {
+        for (Player p : ctPlayers) {
             Location spawn = mapManager.getRandomCtSpawn(p.getWorld());
             if (spawn != null) p.teleport(spawn);
         }
 
         // Give bomb to a random T player
-        List<Player> tPlayers = teamManager.getAlivePlayers(GameTeam.T);
         bombManager.onRoundStart(tPlayers);
 
         transitionTo(RoundPhase.FREEZE);
@@ -153,6 +165,8 @@ public class RoundManager {
         GameTeam winner = reason.isTWin() ? GameTeam.T : GameTeam.CT;
         if (reason.isTWin()) tScore++; else ctScore++;
 
+        // Save weapon stashes before clearing for next round
+        plugin.getServer().getOnlinePlayers().forEach(weaponManager::onRoundEnd);
         economyManager.onRoundEnd(winner);
 
         broadcastTitle(reason.getMessage(),
