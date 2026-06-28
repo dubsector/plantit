@@ -6,3 +6,13 @@ description: Tactical bomb-defuse minigame for Minecraft
 authors: [ dubsector ]
 depend:
   - WorldGuard
+
+commands:
+  plantit:
+    description: PlantIt game management
+    usage: /plantit <setspawn|clearspawns|setsite|forcestart|status|buy>
+
+permissions:
+  plantit.admin:
+    description: Access to PlantIt admin commands
+    default: op

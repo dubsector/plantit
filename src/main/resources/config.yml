@@ -7,3 +7,13 @@ phases:
   freeze-duration: 15   # seconds — buy phase / freeze
   round-duration: 115   # seconds — 1:55 live time
   round-end-delay: 5    # seconds between round end and next round start
+
+# Spawn points are stored here by /plantit setspawn t|ct
+spawns:
+  t: []
+  ct: []
+
+# Bomb site WorldGuard region names, set by /plantit setsite a|b <region>
+sites:
+  a: ''
+  b: ''
