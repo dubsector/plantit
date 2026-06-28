@@ -198,7 +198,7 @@ public class BombManager {
         removeBombBlock();
         economyManager.onBombDefused();
         state = BombState.INACTIVE;
-        broadcast(Component.text("Bomb defused!", NamedTextColor.BLUE));
+        broadcast(Component.text(player.getName() + " defused the bomb!", NamedTextColor.BLUE));
         if (roundManager != null) roundManager.endRound(RoundEndReason.BOMB_DEFUSED);
     }
 
