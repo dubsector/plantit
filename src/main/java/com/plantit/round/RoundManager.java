@@ -70,15 +70,14 @@ public class RoundManager {
         }
 
         teamManager.resetForRound();
-        mapManager.resetSpawnIndexes();
 
-        // Teleport players to spawns
+        // Teleport players to random positions within their spawn region
         for (Player p : teamManager.getAlivePlayers(GameTeam.T)) {
-            Location spawn = mapManager.nextTSpawn();
+            Location spawn = mapManager.getRandomTSpawn(p.getWorld());
             if (spawn != null) p.teleport(spawn);
         }
         for (Player p : teamManager.getAlivePlayers(GameTeam.CT)) {
-            Location spawn = mapManager.nextCtSpawn();
+            Location spawn = mapManager.getRandomCtSpawn(p.getWorld());
             if (spawn != null) p.teleport(spawn);
         }
 

@@ -8,10 +8,15 @@ phases:
   round-duration: 115   # seconds — 1:55 live time
   round-end-delay: 5    # seconds between round end and next round start
 
-# Spawn points are stored here by /plantit setspawn t|ct
+# Spawn zone regions set by /plantit setspawn t|ct <regionName>
+# Players spawn at a random position within the region each round
 spawns:
-  t: []
-  ct: []
+  t:
+    region: ''
+    yaw: 0.0
+  ct:
+    region: ''
+    yaw: 0.0
 
 # Bomb site WorldGuard region names, set by /plantit setsite a|b <region>
 sites:

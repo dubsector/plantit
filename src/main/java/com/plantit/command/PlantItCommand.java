@@ -43,23 +43,18 @@ public class PlantItCommand implements CommandExecutor, TabCompleter {
         switch (args[0].toLowerCase()) {
             case "setspawn" -> {
                 if (!player.hasPermission("plantit.admin")) { deny(player); return true; }
-                if (args.length < 2) { usage(player, "/plantit setspawn <t|ct>"); return true; }
+                if (args.length < 3) { usage(player, "/plantit setspawn <t|ct> <regionName>"); return true; }
+                String spawnRegion = args[2];
+                float yaw = player.getLocation().getYaw();
                 if (args[1].equalsIgnoreCase("t")) {
-                    mapManager.addTSpawn(player.getLocation());
-                    player.sendMessage(ok("T spawn #" + mapManager.getTSpawns().size() + " saved."));
+                    mapManager.setTSpawnRegion(spawnRegion, yaw);
+                    player.sendMessage(ok("T spawn region set to '" + spawnRegion + "' (facing " + Math.round(yaw) + "°)."));
                 } else if (args[1].equalsIgnoreCase("ct")) {
-                    mapManager.addCtSpawn(player.getLocation());
-                    player.sendMessage(ok("CT spawn #" + mapManager.getCtSpawns().size() + " saved."));
+                    mapManager.setCtSpawnRegion(spawnRegion, yaw);
+                    player.sendMessage(ok("CT spawn region set to '" + spawnRegion + "' (facing " + Math.round(yaw) + "°)."));
                 } else {
-                    usage(player, "/plantit setspawn <t|ct>");
+                    usage(player, "/plantit setspawn <t|ct> <regionName>");
                 }
-            }
-            case "clearspawns" -> {
-                if (!player.hasPermission("plantit.admin")) { deny(player); return true; }
-                if (args.length < 2) { usage(player, "/plantit clearspawns <t|ct>"); return true; }
-                if (args[1].equalsIgnoreCase("t")) { mapManager.clearTSpawns(); player.sendMessage(ok("T spawns cleared.")); }
-                else if (args[1].equalsIgnoreCase("ct")) { mapManager.clearCtSpawns(); player.sendMessage(ok("CT spawns cleared.")); }
-                else usage(player, "/plantit clearspawns <t|ct>");
             }
             case "setsite" -> {
                 if (!player.hasPermission("plantit.admin")) { deny(player); return true; }
@@ -80,8 +75,8 @@ public class PlantItCommand implements CommandExecutor, TabCompleter {
                 player.sendMessage(info("Phase",  roundManager.getPhase().toString()));
                 player.sendMessage(info("Round",  roundManager.getCurrentRound() + " / " + plugin.getGameConfig().getMaxRounds()));
                 player.sendMessage(info("Score",  "T " + roundManager.getTScore() + " : " + roundManager.getCtScore() + " CT"));
-                player.sendMessage(info("T spawns",  mapManager.getTSpawns().size() + " set"));
-                player.sendMessage(info("CT spawns", mapManager.getCtSpawns().size() + " set"));
+                player.sendMessage(info("T spawn region",  mapManager.getTSpawnRegion().isEmpty()  ? "not set" : mapManager.getTSpawnRegion()));
+                player.sendMessage(info("CT spawn region", mapManager.getCtSpawnRegion().isEmpty() ? "not set" : mapManager.getCtSpawnRegion()));
                 player.sendMessage(info("Site A", mapManager.getSiteARegion().isEmpty() ? "not set" : mapManager.getSiteARegion()));
                 player.sendMessage(info("Site B", mapManager.getSiteBRegion().isEmpty() ? "not set" : mapManager.getSiteBRegion()));
             }
@@ -107,10 +102,8 @@ public class PlantItCommand implements CommandExecutor, TabCompleter {
         player.sendMessage(Component.text("/plantit buy kit", NamedTextColor.YELLOW)
                 .append(Component.text(" — buy defuse kit ($400, CT only, buy phase)", NamedTextColor.GRAY)));
         if (player.hasPermission("plantit.admin")) {
-            player.sendMessage(Component.text("/plantit setspawn <t|ct>", NamedTextColor.YELLOW)
-                    .append(Component.text(" — add spawn at your location", NamedTextColor.GRAY)));
-            player.sendMessage(Component.text("/plantit clearspawns <t|ct>", NamedTextColor.YELLOW)
-                    .append(Component.text(" — clear all spawns for team", NamedTextColor.GRAY)));
+            player.sendMessage(Component.text("/plantit setspawn <t|ct> <region>", NamedTextColor.YELLOW)
+                    .append(Component.text(" — set spawn zone region for team (face the map first)", NamedTextColor.GRAY)));
             player.sendMessage(Component.text("/plantit setsite <a|b> <region>", NamedTextColor.YELLOW)
                     .append(Component.text(" — assign WorldGuard region as bomb site", NamedTextColor.GRAY)));
             player.sendMessage(Component.text("/plantit forcestart", NamedTextColor.YELLOW)
@@ -122,11 +115,11 @@ public class PlantItCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-        if (args.length == 1) return List.of("buy", "setspawn", "clearspawns", "setsite", "forcestart", "status");
+        if (args.length == 1) return List.of("buy", "setspawn", "setsite", "forcestart", "status");
         if (args.length == 2) {
             return switch (args[0].toLowerCase()) {
                 case "buy" -> List.of("kit");
-                case "setspawn", "clearspawns" -> List.of("t", "ct");
+                case "setspawn" -> List.of("t", "ct");
                 case "setsite" -> List.of("a", "b");
                 default -> List.of();
             };
