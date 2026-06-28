@@ -1,6 +1,7 @@
 package com.plantit;
 
 import com.plantit.config.GameConfig;
+import com.plantit.messaging.GameMessenger;
 import com.plantit.round.RoundListener;
 import com.plantit.round.RoundManager;
 import com.plantit.team.TeamManager;
@@ -13,6 +14,7 @@ public class PlantIt extends JavaPlugin {
     private GameConfig gameConfig;
     private TeamManager teamManager;
     private RoundManager roundManager;
+    private GameMessenger gameMessenger;
 
     @Override
     public void onEnable() {
@@ -21,7 +23,8 @@ public class PlantIt extends JavaPlugin {
 
         gameConfig = new GameConfig(getConfig());
         teamManager = new TeamManager(this);
-        roundManager = new RoundManager(this, teamManager, gameConfig);
+        gameMessenger = new GameMessenger(this);
+        roundManager = new RoundManager(this, teamManager, gameConfig, gameMessenger);
 
         getServer().getPluginManager().registerEvents(
                 new RoundListener(this, roundManager, teamManager), this);
@@ -32,6 +35,7 @@ public class PlantIt extends JavaPlugin {
     @Override
     public void onDisable() {
         if (roundManager != null) roundManager.shutdown();
+        if (gameMessenger != null) gameMessenger.shutdown();
         getLogger().info("Plant It disabled.");
     }
 

@@ -2,6 +2,7 @@ package com.plantit.round;
 
 import com.plantit.PlantIt;
 import com.plantit.config.GameConfig;
+import com.plantit.messaging.GameMessenger;
 import com.plantit.team.GameTeam;
 import com.plantit.team.TeamManager;
 import net.kyori.adventure.text.Component;
@@ -17,6 +18,7 @@ public class RoundManager {
     private final PlantIt plugin;
     private final TeamManager teamManager;
     private final GameConfig config;
+    private final GameMessenger messenger;
 
     private RoundPhase phase = RoundPhase.WAITING;
     private int currentRound = 0;
@@ -27,10 +29,11 @@ public class RoundManager {
 
     private BukkitTask tickTask;
 
-    public RoundManager(PlantIt plugin, TeamManager teamManager, GameConfig config) {
+    public RoundManager(PlantIt plugin, TeamManager teamManager, GameConfig config, GameMessenger messenger) {
         this.plugin = plugin;
         this.teamManager = teamManager;
         this.config = config;
+        this.messenger = messenger;
     }
 
     public void tryStartRound() {
@@ -147,13 +150,14 @@ public class RoundManager {
                 "Final: T " + tScore + " : " + ctScore + " CT",
                 tWon ? NamedTextColor.RED : NamedTextColor.BLUE);
 
-        // Reset for the next match
+        // Reset and signal the proxy that this server has a slot open
         plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
             phase = RoundPhase.WAITING;
             currentRound = 0;
             tScore = 0;
             ctScore = 0;
             inOvertime = false;
+            messenger.signalSlotsOpen(plugin.getGameConfig().getMinPlayers());
         }, 100L);
     }
 
