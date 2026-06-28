@@ -86,8 +86,15 @@ jobs:
       - name: Resolve and download Paper JAR
         run: |
           PAPER_VERSION="1.21.11"
-          BUILD_INFO=$(curl -fsSL "https://api.papermc.io/v2/projects/paper/versions/${PAPER_VERSION}/builds" \
-            | python3 -c "import sys,json; builds=json.load(sys.stdin)['builds']; stable=[b for b in builds if b.get('channel','')=='default']; chosen=(stable or builds)[-1]; print(chosen['build'], chosen['downloads']['application']['sha256'])")
+          curl -fsSL "https://api.papermc.io/v2/projects/paper/versions/${PAPER_VERSION}/builds" \
+            -o /tmp/paper-builds.json
+          BUILD_INFO=$(python3 -c "
+import json
+builds = json.load(open('/tmp/paper-builds.json'))['builds']
+stable = [b for b in builds if b.get('channel','') == 'default']
+chosen = (stable or builds)[-1]
+print(chosen['build'], chosen['downloads']['application']['sha256'])
+")
           BUILD=$(echo "$BUILD_INFO" | awk '{print $1}')
           EXPECTED_SHA=$(echo "$BUILD_INFO" | awk '{print $2}')
           JAR_NAME="paper-${PAPER_VERSION}-${BUILD}.jar"
@@ -231,13 +238,16 @@ jobs:
             "$SHORT_SHA" "$REPO" "$GITHUB_SHA" > release-notes.md
 
       - name: Publish release
-        uses: softprops/action-gh-release@718ea10b132b3b2eba29c1007bb80653f286566b # v3.0.1
-        with:
-          tag_name: build-${{ github.run_number }}
-          name: "plantit ${{ needs.build.outputs.version }} build ${{ github.run_number }} (${{ needs.build.outputs.short_sha }})"
-          body_path: release-notes.md
-          prerelease: true
-          files: |
-            plugin-jar/plantit-*.jar
-            plugin-jar/plantit-*.jar.sigstore.json
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ needs.build.outputs.version }}
+          SHORT_SHA: ${{ needs.build.outputs.short_sha }}
+          RUN_NUMBER: ${{ github.run_number }}
+        run: |
+          gh release create "build-${RUN_NUMBER}" \
+            --title "plantit ${VERSION} build ${RUN_NUMBER} (${SHORT_SHA})" \
+            --notes-file release-notes.md \
+            --prerelease \
+            plugin-jar/plantit-*.jar \
+            plugin-jar/plantit-*.jar.sigstore.json \
             plugin-jar/plantit-*.jar.intoto.jsonl
