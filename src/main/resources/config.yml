@@ -8,8 +8,22 @@ phases:
   round-duration: 115   # seconds — 1:55 live time
   round-end-delay: 5    # seconds between round end and next round start
 
-# Spawn zone regions set by /plantit setspawn t|ct <regionName>
-# Players spawn at a random position within the region each round
+# Default map to load on startup (must match a key under 'maps:').
+# Overridden at runtime by MAP_SELECTED from the queue proxy.
+default-map: ''
+
+# Map configurations. Each map has spawn regions and bomb site regions.
+# Set these with /plantit setmap <name> then /plantit setspawn and /plantit setsite,
+# or edit directly. Region names must match WorldGuard regions in-world.
+maps:
+  dust2:
+    spawns:
+      t:  { region: '', yaw: 90.0 }
+      ct: { region: '', yaw: 270.0 }
+    sites: { a: '', b: '' }
+
+# Legacy single-map config (used if default-map is empty)
+# Set with /plantit setspawn <t|ct> <region> and /plantit setsite <a|b> <region>
 spawns:
   t:
     region: ''
@@ -17,8 +31,6 @@ spawns:
   ct:
     region: ''
     yaw: 0.0
-
-# Bomb site WorldGuard region names, set by /plantit setsite a|b <region>
 sites:
   a: ''
   b: ''

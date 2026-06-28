@@ -15,11 +15,11 @@ public class MapManager {
 
     private final PlantIt plugin;
 
+    private String activeMap   = "";
     private String tSpawnRegion  = "";
     private String ctSpawnRegion = "";
     private float  tSpawnYaw     = 0f;
     private float  ctSpawnYaw    = 0f;
-
     private String siteARegion = "";
     private String siteBRegion = "";
 
@@ -29,30 +29,55 @@ public class MapManager {
     }
 
     public void load() {
-        tSpawnRegion  = plugin.getConfig().getString("spawns.t.region", "");
-        ctSpawnRegion = plugin.getConfig().getString("spawns.ct.region", "");
-        tSpawnYaw     = (float) plugin.getConfig().getDouble("spawns.t.yaw", 0.0);
-        ctSpawnYaw    = (float) plugin.getConfig().getDouble("spawns.ct.yaw", 0.0);
-        siteARegion   = plugin.getConfig().getString("sites.a", "");
-        siteBRegion   = plugin.getConfig().getString("sites.b", "");
+        // Try loading from active/default-map first; fall back to legacy flat keys
+        String def = plugin.getConfig().getString("default-map", "");
+        if (!def.isEmpty() && plugin.getConfig().isConfigurationSection("maps." + def)) {
+            loadMap(def);
+        } else {
+            tSpawnRegion  = plugin.getConfig().getString("spawns.t.region", "");
+            ctSpawnRegion = plugin.getConfig().getString("spawns.ct.region", "");
+            tSpawnYaw     = (float) plugin.getConfig().getDouble("spawns.t.yaw", 0.0);
+            ctSpawnYaw    = (float) plugin.getConfig().getDouble("spawns.ct.yaw", 0.0);
+            siteARegion   = plugin.getConfig().getString("sites.a", "");
+            siteBRegion   = plugin.getConfig().getString("sites.b", "");
+        }
+    }
+
+    /** Loads spawn/site regions from the {@code maps.<mapName>.*} config block. */
+    public void loadMap(String mapName) {
+        String base = "maps." + mapName;
+        if (!plugin.getConfig().isConfigurationSection(base)) {
+            plugin.getLogger().warning("Map '" + mapName + "' not found in config — ignoring MAP_SELECTED.");
+            return;
+        }
+        activeMap     = mapName;
+        tSpawnRegion  = plugin.getConfig().getString(base + ".spawns.t.region", "");
+        tSpawnYaw     = (float) plugin.getConfig().getDouble(base + ".spawns.t.yaw", 0.0);
+        ctSpawnRegion = plugin.getConfig().getString(base + ".spawns.ct.region", "");
+        ctSpawnYaw    = (float) plugin.getConfig().getDouble(base + ".spawns.ct.yaw", 0.0);
+        siteARegion   = plugin.getConfig().getString(base + ".sites.a", "");
+        siteBRegion   = plugin.getConfig().getString(base + ".sites.b", "");
+        plugin.getLogger().info("Loaded map config: " + mapName);
     }
 
     // -------------------------------------------------------------------------
-    // Spawn region setters
+    // Spawn region setters (write to active map section, or legacy if no map set)
 
     public void setTSpawnRegion(String region, float yaw) {
         tSpawnRegion = region;
         tSpawnYaw    = yaw;
-        plugin.getConfig().set("spawns.t.region", region);
-        plugin.getConfig().set("spawns.t.yaw", (double) yaw);
+        String base  = activeMap.isEmpty() ? "spawns.t" : "maps." + activeMap + ".spawns.t";
+        plugin.getConfig().set(base + ".region", region);
+        plugin.getConfig().set(base + ".yaw", (double) yaw);
         plugin.saveConfig();
     }
 
     public void setCtSpawnRegion(String region, float yaw) {
         ctSpawnRegion = region;
         ctSpawnYaw    = yaw;
-        plugin.getConfig().set("spawns.ct.region", region);
-        plugin.getConfig().set("spawns.ct.yaw", (double) yaw);
+        String base   = activeMap.isEmpty() ? "spawns.ct" : "maps." + activeMap + ".spawns.ct";
+        plugin.getConfig().set(base + ".region", region);
+        plugin.getConfig().set(base + ".yaw", (double) yaw);
         plugin.saveConfig();
     }
 
@@ -88,7 +113,8 @@ public class MapManager {
     public void setSiteRegion(String site, String region) {
         if (site.equalsIgnoreCase("a")) siteARegion = region;
         else siteBRegion = region;
-        plugin.getConfig().set("sites." + site.toLowerCase(), region);
+        String base = activeMap.isEmpty() ? "sites" : "maps." + activeMap + ".sites";
+        plugin.getConfig().set(base + "." + site.toLowerCase(), region);
         plugin.saveConfig();
     }
 
@@ -136,8 +162,9 @@ public class MapManager {
 
     public boolean hasSpawns() { return !tSpawnRegion.isEmpty() && !ctSpawnRegion.isEmpty(); }
 
-    public String getTSpawnRegion()  { return tSpawnRegion; }
-    public String getCtSpawnRegion() { return ctSpawnRegion; }
-    public String getSiteARegion()   { return siteARegion; }
-    public String getSiteBRegion()   { return siteBRegion; }
+    public String getActiveMap()      { return activeMap; }
+    public String getTSpawnRegion()   { return tSpawnRegion; }
+    public String getCtSpawnRegion()  { return ctSpawnRegion; }
+    public String getSiteARegion()    { return siteARegion; }
+    public String getSiteBRegion()    { return siteBRegion; }
 }

@@ -42,7 +42,7 @@ public class PlantIt extends JavaPlugin {
         economyManager = new EconomyManager(this, teamManager);
         weaponManager  = new WeaponManager(this, economyManager, teamManager);
         buyMenu        = new BuyMenu(this, weaponManager, economyManager, teamManager);
-        gameMessenger  = new GameMessenger(this);
+        gameMessenger  = new GameMessenger(this, mapManager);
         bombManager    = new BombManager(this, teamManager, economyManager, mapManager);
         roundManager   = new RoundManager(this, teamManager, gameConfig, gameMessenger,
                                            mapManager, economyManager, bombManager, weaponManager);
