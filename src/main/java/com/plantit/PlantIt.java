@@ -78,6 +78,7 @@ public class PlantIt extends JavaPlugin {
     public RoundManager getRoundManager() { return roundManager; }
     public MapManager getMapManager()    { return mapManager; }
     public EconomyManager getEconomyManager() { return economyManager; }
-    public WeaponManager getWeaponManager()   { return weaponManager; }
-    public BombManager getBombManager()  { return bombManager; }
+    public WeaponManager getWeaponManager()    { return weaponManager; }
+    public BombManager getBombManager()        { return bombManager; }
+    public GameMessenger getGameMessenger()    { return gameMessenger; }
 }
