@@ -86,16 +86,16 @@ jobs:
       - name: Resolve and download Paper JAR
         run: |
           PAPER_VERSION="1.21.11"
-          curl -fsSL "https://api.papermc.io/v2/projects/paper/versions/${PAPER_VERSION}/builds" \
+          curl -fsSL "https://fill.papermc.io/v3/projects/paper/versions/${PAPER_VERSION}/builds" \
             -o /tmp/paper-builds.json
-          BUILD_INFO=$(python3 -c "import json; builds=json.load(open('/tmp/paper-builds.json'))['builds']; stable=[b for b in builds if b.get('channel','')=='default']; chosen=(stable or builds)[-1]; print(chosen['build'], chosen['downloads']['application']['sha256'])")
+          BUILD_INFO=$(python3 -c "import json; builds=json.load(open('/tmp/paper-builds.json')); stable=[b for b in builds if b.get('channel','')=='STABLE']; chosen=(stable or builds)[0]; d=chosen['downloads']['server:default']; print(chosen['id'], d['checksums']['sha256'], d['name'], d['url'])")
           BUILD=$(echo "$BUILD_INFO" | awk '{print $1}')
           EXPECTED_SHA=$(echo "$BUILD_INFO" | awk '{print $2}')
-          JAR_NAME="paper-${PAPER_VERSION}-${BUILD}.jar"
-          echo "Resolved: Paper ${PAPER_VERSION} build ${BUILD}"
+          JAR_NAME=$(echo "$BUILD_INFO" | awk '{print $3}')
+          JAR_URL=$(echo "$BUILD_INFO" | awk '{print $4}')
+          echo "Resolved: Paper ${PAPER_VERSION} build ${BUILD} (${JAR_NAME})"
           mkdir -p smoke-server/plugins
-          curl -fsSL "https://api.papermc.io/v2/projects/paper/versions/${PAPER_VERSION}/builds/${BUILD}/downloads/${JAR_NAME}" \
-            -o smoke-server/paper.jar
+          curl -fsSL "$JAR_URL" -o smoke-server/paper.jar
           echo "${EXPECTED_SHA}  smoke-server/paper.jar" | sha256sum -c
 
       - name: Download WorldEdit and WorldGuard via Maven
