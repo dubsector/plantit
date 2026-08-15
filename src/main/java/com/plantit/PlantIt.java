@@ -57,7 +57,7 @@ public class PlantIt extends JavaPlugin {
         getServer().getPluginManager().registerEvents(
                 new WeaponListener(this, weaponManager, buyMenu, roundManager, economyManager), this);
 
-        PlantItCommand cmd = new PlantItCommand(this, mapManager, roundManager, economyManager);
+        PlantItCommand cmd = new PlantItCommand(mapManager, roundManager, economyManager);
         getCommand("plantit").setExecutor(cmd);
         getCommand("plantit").setTabCompleter(cmd);
 

@@ -1,6 +1,8 @@
 game:
   min-players: 2
   max-rounds: 24        # first to 13 wins
+  # Rounds per overtime, played when regulation ends level. Sides swap at the
+  # halfway mark and everyone is re-staked. Set below 2 to end level as a draw.
   overtime-rounds: 6    # MR3 overtime
 
 phases:

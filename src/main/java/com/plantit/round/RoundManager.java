@@ -37,6 +37,8 @@ public class RoundManager {
     private int tScore = 0;
     private int ctScore = 0;
     private int phaseTimeLeft = 0;
+    /** 0 during regulation, then 1 for the first overtime, 2 for the second, and so on. */
+    private int overtime = 0;
 
     private BukkitTask tickTask;
 
@@ -73,11 +75,19 @@ public class RoundManager {
             mapManager.load();
         }
 
-        // Halftime swap
-        int half = config.getMaxRounds() / 2;
-        if (currentRound == half + 1) {
+        // Side swap at regulation halftime and at the start of each overtime half.
+        // Every overtime half also re-stakes players, so the extra rounds are not
+        // decided by whatever economy the tied teams happened to carry in.
+        if (isSideSwapRound(currentRound)) {
             teamManager.swapTeams();
-            broadcastTitle("Halftime", "Teams have swapped", NamedTextColor.YELLOW);
+            if (overtime > 0) {
+                economyManager.initOvertimeHalf();
+                String title = currentRound == overtimeStartRound()
+                        ? "Overtime " + overtime : "Overtime Half";
+                broadcastTitle(title, "Teams swapped  |  first to " + winsNeeded(), NamedTextColor.GOLD);
+            } else {
+                broadcastTitle("Halftime", "Teams have swapped", NamedTextColor.YELLOW);
+            }
         }
 
         teamManager.resetForRound();
@@ -177,13 +187,22 @@ public class RoundManager {
                 "T  " + tScore + " : " + ctScore + "  CT",
                 reason.getColor());
 
+        Runnable next;
         if (isMatchOver()) {
-            plugin.getServer().getScheduler().runTaskLater(plugin, this::endMatch,
-                    config.getRoundEndDelay() * 20L);
+            next = this::endMatch;
+        } else if (currentRound >= segmentEndRound()) {
+            // Segment ran out with nobody at the win threshold, so the score is level.
+            next = overtimeEnabled() ? this::startOvertime : this::endMatch;
         } else {
-            plugin.getServer().getScheduler().runTaskLater(plugin, this::startRound,
-                    config.getRoundEndDelay() * 20L);
+            next = this::startRound;
         }
+        plugin.getServer().getScheduler().runTaskLater(plugin, next,
+                config.getRoundEndDelay() * 20L);
+    }
+
+    private void startOvertime() {
+        overtime++;
+        startRound();
     }
 
     /** Called after every death — checks whether either team has been wiped. */
@@ -198,8 +217,41 @@ public class RoundManager {
     }
 
     private boolean isMatchOver() {
-        int winsNeeded = config.getMaxRounds() / 2 + 1;
-        return tScore >= winsNeeded || ctScore >= winsNeeded || currentRound >= config.getMaxRounds();
+        int needed = winsNeeded();
+        return tScore >= needed || ctScore >= needed;
+    }
+
+    /** Rounds a team must win outright, raised by half an overtime each time one runs. */
+    private int winsNeeded() {
+        int regulationHalf = config.getMaxRounds() / 2;
+        if (overtime == 0) return regulationHalf + 1;
+        return regulationHalf + overtime * (config.getOvertimeRounds() / 2) + 1;
+    }
+
+    /** Last round of the current segment: regulation, or the overtime in progress. */
+    private int segmentEndRound() {
+        return config.getMaxRounds() + overtime * config.getOvertimeRounds();
+    }
+
+    /** First round of the overtime in progress; 0 during regulation. */
+    private int overtimeStartRound() {
+        if (overtime == 0) return 0;
+        return config.getMaxRounds() + (overtime - 1) * config.getOvertimeRounds() + 1;
+    }
+
+    /** An overtime needs two halves to be playable; below that a level score is a draw. */
+    private boolean overtimeEnabled() {
+        return config.getOvertimeRounds() >= 2;
+    }
+
+    private boolean isSideSwapRound(int round) {
+        int regulation = config.getMaxRounds();
+        if (round == regulation / 2 + 1) return true;
+        int overtimeHalf = config.getOvertimeRounds() / 2;
+        if (round > regulation && overtimeHalf > 0) {
+            return (round - regulation - 1) % overtimeHalf == 0;
+        }
+        return false;
     }
 
     private void endMatch() {
@@ -215,6 +267,7 @@ public class RoundManager {
             currentRound = 0;
             tScore = 0;
             ctScore = 0;
+            overtime = 0;
             messenger.signalSlotsOpen(plugin.getGameConfig().getMinPlayers());
         }, 100L);
     }
@@ -252,4 +305,13 @@ public class RoundManager {
     public int getTScore()           { return tScore; }
     public int getCtScore()          { return ctScore; }
     public int getPhaseTimeLeft()    { return phaseTimeLeft; }
+    public int getOvertime()         { return overtime; }
+    public int getWinsNeeded()       { return winsNeeded(); }
+
+    /** Round position for display: "12/24" in regulation, "OT1 2/6" in overtime. */
+    public String getRoundLabel() {
+        if (overtime == 0) return currentRound + "/" + config.getMaxRounds();
+        int withinOvertime = currentRound - overtimeStartRound() + 1;
+        return "OT" + overtime + " " + withinOvertime + "/" + config.getOvertimeRounds();
+    }
 }

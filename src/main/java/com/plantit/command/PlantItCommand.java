@@ -1,6 +1,5 @@
 package com.plantit.command;
 
-import com.plantit.PlantIt;
 import com.plantit.economy.EconomyManager;
 import com.plantit.map.MapManager;
 import com.plantit.round.RoundManager;
@@ -18,14 +17,12 @@ import java.util.List;
 
 public class PlantItCommand implements CommandExecutor, TabCompleter {
 
-    private final PlantIt plugin;
     private final MapManager mapManager;
     private final RoundManager roundManager;
     private final EconomyManager economyManager;
 
-    public PlantItCommand(PlantIt plugin, MapManager mapManager,
+    public PlantItCommand(MapManager mapManager,
                           RoundManager roundManager, EconomyManager economyManager) {
-        this.plugin = plugin;
         this.mapManager = mapManager;
         this.roundManager = roundManager;
         this.economyManager = economyManager;
@@ -85,8 +82,9 @@ public class PlantItCommand implements CommandExecutor, TabCompleter {
                 if (!player.hasPermission("plantit.admin")) { deny(player); return true; }
                 player.sendMessage(Component.text("=== PlantIt Status ===", NamedTextColor.GOLD));
                 player.sendMessage(info("Phase",  roundManager.getPhase().toString()));
-                player.sendMessage(info("Round",  roundManager.getCurrentRound() + " / " + plugin.getGameConfig().getMaxRounds()));
+                player.sendMessage(info("Round",  roundManager.getRoundLabel()));
                 player.sendMessage(info("Score",  "T " + roundManager.getTScore() + " : " + roundManager.getCtScore() + " CT"));
+                player.sendMessage(info("Wins needed", String.valueOf(roundManager.getWinsNeeded())));
                 player.sendMessage(info("Active map", mapManager.getActiveMap().isEmpty() ? "legacy/none" : mapManager.getActiveMap()));
                 player.sendMessage(info("T spawn region",  mapManager.getTSpawnRegion().isEmpty()  ? "not set" : mapManager.getTSpawnRegion()));
                 player.sendMessage(info("CT spawn region", mapManager.getCtSpawnRegion().isEmpty() ? "not set" : mapManager.getCtSpawnRegion()));
