@@ -47,6 +47,8 @@
     </repositories>
 
     <dependencies>
+        <!-- Keep in lockstep with PAPER_VERSION in .github/workflows/build.yml.
+             Dependabot ignores this artifact; see .github/dependabot.yml. -->
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
