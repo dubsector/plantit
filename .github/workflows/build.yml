@@ -85,6 +85,7 @@ jobs:
 
       - name: Resolve and download Paper JAR
         run: |
+          # Must match the paper-api version in pom.xml.
           PAPER_VERSION="1.21.11"
           curl -fsSL "https://fill.papermc.io/v3/projects/paper/versions/${PAPER_VERSION}/builds" \
             -o /tmp/paper-builds.json

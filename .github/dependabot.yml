@@ -9,6 +9,12 @@ updates:
     cooldown:
       default-days: 7
       semver-major-days: 14
+    ignore:
+      # paper-api tracks the Minecraft version this plugin targets, not the
+      # newest release. It must stay in lockstep with PAPER_VERSION in
+      # build.yml and the version quoted in the README and release notes.
+      # Retargeting Minecraft is a deliberate change, so bump it by hand.
+      - dependency-name: "io.papermc.paper:paper-api"
     groups:
       maven-dependencies:
         patterns: ["*"]
