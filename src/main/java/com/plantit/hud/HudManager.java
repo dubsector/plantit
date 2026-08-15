@@ -21,14 +21,12 @@ public class HudManager {
     // Color codes with no following text render as blank, so only the team prefix shows.
     private static final String[] SLOTS = {"§0","§1","§2","§3","§4","§5","§6","§7"};
 
-    private final PlantIt plugin;
     private final RoundManager roundManager;
     private final TeamManager teamManager;
     private final Scoreboard scoreboard;
     private final Objective objective;
 
     public HudManager(PlantIt plugin, RoundManager roundManager, TeamManager teamManager) {
-        this.plugin = plugin;
         this.roundManager = roundManager;
         this.teamManager = teamManager;
 
@@ -57,11 +55,10 @@ public class HudManager {
     public void update() {
         int tAlive  = teamManager.getAlivePlayers(GameTeam.T).size();
         int ctAlive = teamManager.getAlivePlayers(GameTeam.CT).size();
-        int round   = roundManager.getCurrentRound();
-        int max     = plugin.getGameConfig().getMaxRounds();
         int tScore  = roundManager.getTScore();
         int ctScore = roundManager.getCtScore();
         RoundPhase phase = roundManager.getPhase();
+        boolean inOvertime = roundManager.getOvertime() > 0;
 
         setLine(0, Component.text(" Terrorists", NamedTextColor.RED)
                 .append(Component.text("  " + tAlive + " alive", NamedTextColor.GRAY)));
@@ -74,7 +71,8 @@ public class HudManager {
                 .append(Component.text("  " + ctAlive + " alive", NamedTextColor.GRAY)));
         setLine(5, Component.empty());
         setLine(6, Component.text(" Round ", NamedTextColor.GRAY)
-                .append(Component.text(round + "/" + max, NamedTextColor.WHITE)));
+                .append(Component.text(roundManager.getRoundLabel(),
+                        inOvertime ? NamedTextColor.GOLD : NamedTextColor.WHITE)));
         setLine(7, Component.text(" " + phaseLabel(phase), NamedTextColor.YELLOW));
     }
 

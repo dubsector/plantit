@@ -8,7 +8,7 @@
 [![Security Policy](https://img.shields.io/badge/Security-Policy-green)](SECURITY.md)
 [![Dependabot](https://img.shields.io/badge/Dependabot-enabled-025E8C?logo=dependabot)](https://github.com/dubsector/plantit/network/updates)
 
-Tactical bomb-defuse minigame for Minecraft, running on [Paper](https://papermc.io/software/paper) 1.21.4.
+Tactical bomb-defuse minigame for Minecraft, running on [Paper](https://papermc.io/software/paper) 1.21.11.
 
 Players split into two teams. One team plants a bomb at a designated site; the other defuses it before time runs out. Built with original pixel-art assets and a custom game engine — not a port of any existing game.
 
@@ -19,7 +19,7 @@ Works alongside [plantit-queue](https://github.com/dubsector/plantit-queue), a V
 - Paper 1.21.11
 - Java 21
 - [WorldEdit](https://enginehub.org/worldedit/) 7.4.x
-- [WorldGuard](https://enginehub.org/worldguard/) 7.0.14+
+- [WorldGuard](https://enginehub.org/worldguard/) 7.0.17+
 - [plantit-queue](https://github.com/dubsector/plantit-queue) on your Velocity proxy
 
 ## Installation
@@ -54,6 +54,18 @@ phases:
 4. Round ends when: all of one team is eliminated, the bomb explodes, the bomb is defused, or time expires
 5. Teams swap at halftime
 6. First team to win `max-rounds / 2 + 1` rounds wins the match
+
+### Overtime
+
+If regulation ends level, the match goes to overtime rather than a draw. Each
+overtime is `overtime-rounds` long, sides swap at its halfway mark, and every
+player is re-staked to $10,000 at the start of both halves so the extra rounds
+are not decided by leftover economy.
+
+Winning an overtime takes half its rounds plus one. With the defaults that is a
+12-12 tie going to a 6-round overtime, where the first team to 16 wins. If the
+overtime also ends level, another one begins. Setting `overtime-rounds` below 2
+turns this off and a level match is declared a draw.
 
 ### Win conditions
 
